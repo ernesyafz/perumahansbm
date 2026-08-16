@@ -1,58 +1,178 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
 </p>
 
-## About Laravel
+<h1 align="center">Perumahan SBM</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  Sistem informasi perumahan berbasis web — landing page cluster/unit rumah, form survey minat pembeli, dan panel admin untuk pengelolaan cluster, agent, dan data survey.
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<p align="center">
+  <img alt="Laravel" src="https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white">
+  <img alt="PHP" src="https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white">
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white">
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white">
+</p>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Tentang Project
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Perumahan SBM** adalah aplikasi web untuk menampilkan informasi perumahan/cluster kepada calon pembeli sekaligus mengelola minat pembeli (survey) dari sisi admin. Aplikasi ini dibangun dengan **Laravel 13**.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Fitur Utama
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- 🏠 **Landing page publik** — daftar cluster/unit rumah lengkap dengan tipe, harga, luas tanah/bangunan, jumlah kamar, dan status ketersediaan (Tersedia / Terbatas / Habis)
+- 🔍 **Pencarian cluster** — filter unit berdasarkan nama atau tipe rumah
+- 📝 **Form survey minat pembeli** — pengunjung mengisi data minat, dengan alur *pending submission* yang meminta verifikasi login/registrasi sebelum data tersimpan permanen
+- 🔐 **Autentikasi terpisah** — login admin (`/admin/login`) dan login/registrasi publik untuk calon pembeli (`/login`, `/register`)
+- 🛠️ **Panel admin**:
+  - Dashboard ringkasan cluster & survey submission
+  - CRUD cluster (tambah, edit, hapus, upload gambar)
+  - Kelola data agent/kontak pemasaran
+  - Kelola survey submission (lihat detail, proses, hapus)
+- 📞 **Info agent** — kontak, jadwal, dan promo agent ditampilkan di landing page
 
-## Agentic Development
+### Tech Stack
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+| Layer | Teknologi |
+|---|---|
+| Backend | Laravel 13, PHP 8.3+ |
+| Database | SQLite (default lokal) / MySQL (opsional) |
+| Frontend build | Vite 8, Tailwind CSS v4 |
+| View | Blade Templates |
+| Testing | PHPUnit |
+| Code style | Laravel Pint |
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
+## Struktur Folder Penting
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── AdminController.php     # Dashboard admin, CRUD cluster, kelola survey
+│   │   └── AuthController.php      # Login admin, login/register publik, verifikasi
+│   └── Middleware/
+│       └── AdminMiddleware.php     # Proteksi route khusus admin
+└── Models/
+    ├── Agent.php                   # Data kontak/agent pemasaran
+    ├── Cluster.php                 # Data cluster/unit rumah
+    ├── Status.php                  # Status ketersediaan unit
+    ├── SurveySubmission.php        # Data survey yang sudah terverifikasi
+    ├── PendingSurveySubmission.php # Data survey menunggu verifikasi login
+    └── User.php                    # Akun admin & pembeli (dibedakan lewat kolom role)
+
+database/
+├── migrations/                     # Struktur tabel
+└── seeders/                        # Data awal (status, contoh cluster, agent, admin default)
+
+resources/views/
+├── welcome.blade.php               # Landing page publik
+├── admin/                          # Dashboard, edit cluster, detail survey
+├── auth/                           # Login, register, verifikasi
+└── survey/                         # Konfirmasi survey submission
+
+routes/
+└── web.php                         # Semua route aplikasi
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## Instalasi & Setup Lokal
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Prasyarat
 
-## Code of Conduct
+- PHP >= 8.3
+- Composer
+- Node.js & npm
+- Ekstensi PHP standar Laravel (`sqlite3` jika pakai database default)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Langkah Instalasi
 
-## Security Vulnerabilities
+```bash
+# 1. Clone repository
+git clone https://github.com/ernesyafz/perumahansbm.git
+cd perumahansbm
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 2. Install dependency PHP
+composer install
 
-## License
+# 3. Salin file environment & generate application key
+cp .env.example .env
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 4. Siapkan database (default: SQLite)
+touch database/database.sqlite
+php artisan migrate --seed
+
+# 5. Buat symlink storage (untuk gambar cluster yang diupload)
+php artisan storage:link
+
+# 6. Install dependency frontend & build asset
+npm install
+npm run build
+```
+
+### Menjalankan Aplikasi
+
+```bash
+php artisan serve
+```
+
+Aplikasi berjalan di `http://127.0.0.1:8000`.
+
+Untuk mode development dengan hot-reload asset:
+
+```bash
+npm run dev
+```
+
+### Akun Admin Default (dari seeder)
+
+| Email | Password |
+|---|---|
+| `admin@sbm.test` | `password` |
+
+> ⚠️ **Wajib diganti** sebelum deploy ke environment publik/production.
+
+---
+
+## Menjalankan Test
+
+```bash
+php artisan test
+```
+
+Test yang tersedia mencakup: login admin, kelola survey submission oleh admin, serta alur pending survey submission (termasuk kasus expired dan valid).
+
+---
+
+## Format Kode
+
+Project ini menggunakan [Laravel Pint](https://laravel.com/docs/pint) untuk menjaga konsistensi gaya kode PHP:
+
+```bash
+./vendor/bin/pint
+```
+
+---
+
+## Kontribusi / Pengembangan Lanjutan
+
+Alur kerja pengembangan (branch, commit, pull request) mengikuti panduan di [`WORKFLOW-VSCODE-GITHUB.md`](./WORKFLOW-VSCODE-GITHUB.md).
+
+Ringkas:
+
+1. Buat branch baru dari `main` (`feat/...`, `fix/...`, `chore/...`)
+2. Commit dengan format [Conventional Commits](https://www.conventionalcommits.org/)
+3. Push branch & buat Pull Request ke `main`
+4. Review & merge
+
+---
+
+## Lisensi
+
+Project ini menggunakan framework [Laravel](https://laravel.com) yang berlisensi [MIT](https://opensource.org/licenses/MIT).
