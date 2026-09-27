@@ -324,6 +324,23 @@
             border-color: var(--sbm-hijau);
             box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
         }
+        .form-control.is-invalid,
+        .form-select.is-invalid,
+        textarea.form-control.is-invalid {
+            border-color: #dc3545;
+            background-image: none;
+            box-shadow: 0 0 0 0.15rem rgba(220, 53, 69, 0.08);
+        }
+        .form-control.is-invalid::placeholder,
+        textarea.form-control.is-invalid::placeholder {
+            color: rgba(220, 53, 69, 0.75);
+        }
+        .invalid-feedback {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 0.45rem;
+        }
 
         .divider-soft { border-top: 1px solid var(--sbm-line); margin: 26px 0; }
 
@@ -629,74 +646,131 @@
                                 </div>
                             </div>
 
-                            <form method="POST" action="{{ route('admin.clusters.store') }}" enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('admin.clusters.store') }}" enctype="multipart/form-data" class="needs-validation" novalidate>
                                 @csrf
 
                                 <div class="form-section-label"><i class="bi bi-card-heading"></i> Informasi Dasar</div>
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label">Nama Cluster</label>
-                                        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                                        <label class="form-label" for="cluster-name">Nama Cluster</label>
+                                        <input type="text" id="cluster-name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Ketikkan nama cluster" required>
+                                        @error('name')
+                                            <div class="invalid-feedback d-block">Ketikkan nama cluster terlebih dahulu.</div>
+                                        @else
+                                            <div class="invalid-feedback">Nama Cluster wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Tipe</label>
-                                        <input type="text" name="type" class="form-control" value="{{ old('type') }}" required>
+                                        <label class="form-label" for="cluster-type">Tipe</label>
+                                        <input type="text" id="cluster-type" name="type" class="form-control @error('type') is-invalid @enderror" value="{{ old('type') }}" placeholder="Contoh: Type 36/72" required>
+                                        @error('type')
+                                            <div class="invalid-feedback d-block">Masukkan tipe cluster dengan benar.</div>
+                                        @else
+                                            <div class="invalid-feedback">Tipe cluster wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Harga</label>
-                                        <input type="number" name="price" class="form-control" value="{{ old('price') }}" required>
+                                        <label class="form-label" for="cluster-price">Harga</label>
+                                        <input type="number" id="cluster-price" name="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" min="0" step="1000" placeholder="Masukkan harga" required>
+                                        @error('price')
+                                            <div class="invalid-feedback d-block">Harga harus berupa angka yang valid.</div>
+                                        @else
+                                            <div class="invalid-feedback">Harga harus berupa angka yang valid.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Luas Tanah (m²)</label>
-                                        <input type="number" name="land_area" class="form-control" value="{{ old('land_area') }}" required>
+                                        <label class="form-label" for="cluster-land-area">Luas Tanah (m²)</label>
+                                        <input type="number" id="cluster-land-area" name="land_area" class="form-control @error('land_area') is-invalid @enderror" value="{{ old('land_area') }}" min="1" step="1" placeholder="Contoh: 72" required>
+                                        @error('land_area')
+                                            <div class="invalid-feedback d-block">Luas tanah harus lebih dari 0.</div>
+                                        @else
+                                            <div class="invalid-feedback">Luas tanah wajib diisi dan harus lebih dari 0.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Luas Bangunan (m²)</label>
-                                        <input type="number" name="building_area" class="form-control" value="{{ old('building_area') }}" required>
+                                        <label class="form-label" for="cluster-building-area">Luas Bangunan (m²)</label>
+                                        <input type="number" id="cluster-building-area" name="building_area" class="form-control @error('building_area') is-invalid @enderror" value="{{ old('building_area') }}" min="1" step="1" placeholder="Contoh: 36" required>
+                                        @error('building_area')
+                                            <div class="invalid-feedback d-block">Luas bangunan harus lebih dari 0.</div>
+                                        @else
+                                            <div class="invalid-feedback">Luas bangunan wajib diisi dan harus lebih dari 0.</div>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="form-section-label"><i class="bi bi-rulers"></i> Spesifikasi Tambahan</div>
                                 <div class="row g-3">
                                     <div class="col-md-4">
-                                        <label class="form-label">Kamar Tidur</label>
-                                        <input type="number" name="bedrooms" class="form-control" value="{{ old('bedrooms') }}" required>
+                                        <label class="form-label" for="cluster-bedrooms">Kamar Tidur</label>
+                                        <input type="number" id="cluster-bedrooms" name="bedrooms" class="form-control @error('bedrooms') is-invalid @enderror" value="{{ old('bedrooms') }}" min="0" step="1" placeholder="Contoh: 2" required>
+                                        @error('bedrooms')
+                                            <div class="invalid-feedback d-block">Jumlah kamar tidur harus diisi.</div>
+                                        @else
+                                            <div class="invalid-feedback">Jumlah kamar tidur wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Kamar Mandi</label>
-                                        <input type="number" name="bathrooms" class="form-control" value="{{ old('bathrooms') }}" required>
+                                        <label class="form-label" for="cluster-bathrooms">Kamar Mandi</label>
+                                        <input type="number" id="cluster-bathrooms" name="bathrooms" class="form-control @error('bathrooms') is-invalid @enderror" value="{{ old('bathrooms') }}" min="0" step="1" placeholder="Contoh: 2" required>
+                                        @error('bathrooms')
+                                            <div class="invalid-feedback d-block">Jumlah kamar mandi harus diisi.</div>
+                                        @else
+                                            <div class="invalid-feedback">Jumlah kamar mandi wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Carport</label>
-                                        <input type="number" name="carport" class="form-control" value="{{ old('carport', 1) }}" required>
+                                        <label class="form-label" for="cluster-carport">Carport</label>
+                                        <input type="number" id="cluster-carport" name="carport" class="form-control @error('carport') is-invalid @enderror" value="{{ old('carport', 1) }}" min="0" step="1" placeholder="Contoh: 1" required>
+                                        @error('carport')
+                                            <div class="invalid-feedback d-block">Jumlah carport harus diisi.</div>
+                                        @else
+                                            <div class="invalid-feedback">Jumlah carport wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-12">
-                                        <label class="form-label">Status</label>
-                                        <select name="status_id" class="form-select" required>
-                                            <option value="" disabled selected>-- Pilih Status --</option>
+                                        <label class="form-label" for="cluster-status">Status</label>
+                                        <select id="cluster-status" name="status_id" class="form-select @error('status_id') is-invalid @enderror" required>
+                                            <option value="" disabled {{ old('status_id') == '' ? 'selected' : '' }}>-- Pilih Status --</option>
                                             @foreach($statuses as $status)
                                                 <option value="{{ $status->id }}" {{ old('status_id') == $status->id ? 'selected' : '' }}>
                                                     {{ ucfirst($status->name) }}
                                                 </option>
                                             @endforeach
                                         </select>
+                                        @error('status_id')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @else
+                                            <div class="invalid-feedback">Silakan pilih status cluster.</div>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="form-section-label"><i class="bi bi-image"></i> Media &amp; Deskripsi</div>
                                 <div class="row g-3">
-                                    <!-- KODE INI SUDAH DIREVISI HANYA MENYISAKAN INPUT UPLOAD SAJA -->
                                     <div class="col-12">
-                                        <label class="form-label">Upload Gambar Cluster</label>
-                                        <input type="file" name="image" class="form-control" accept="image/*" required>
+                                        <label class="form-label" for="cluster-image">Upload Gambar Cluster</label>
+                                        <input type="file" id="cluster-image" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/*" required>
+                                        @error('image')
+                                            <div class="invalid-feedback d-block">Silakan pilih gambar cluster yang valid.</div>
+                                        @else
+                                            <div class="invalid-feedback">Silakan pilih gambar cluster.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label">Deskripsi</label>
-                                        <textarea name="description" class="form-control" rows="3">{{ old('description') }}</textarea>
+                                        <label class="form-label" for="cluster-description">Deskripsi</label>
+                                        <textarea id="cluster-description" name="description" class="form-control @error('description') is-invalid @enderror" rows="3" placeholder="Jelaskan keunggulan cluster, lokasi, dan fasilitasnya" required>{{ old('description') }}</textarea>
+                                        @error('description')
+                                            <div class="invalid-feedback d-block">Deskripsi cluster wajib diisi.</div>
+                                        @else
+                                            <div class="invalid-feedback">Deskripsi cluster wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label">Ringkasan Fitur</label>
-                                        <textarea name="feature_summary" class="form-control" rows="2">{{ old('feature_summary') }}</textarea>
+                                        <label class="form-label" for="cluster-feature-summary">Ringkasan Fitur</label>
+                                        <textarea id="cluster-feature-summary" name="feature_summary" class="form-control @error('feature_summary') is-invalid @enderror" rows="2">{{ old('feature_summary') }}</textarea>
+                                        @error('feature_summary')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -721,40 +795,80 @@
                                 </div>
                             </div>
 
-                            <form method="POST" action="{{ route('admin.agent.update') }}">
+                            <form method="POST" action="{{ route('admin.agent.update') }}" class="needs-validation" novalidate>
                                 @csrf
                                 <div class="row g-3 mt-1">
                                     <div class="col-12">
-                                        <label class="form-label">Nama Agen</label>
-                                        <input type="text" name="name" class="form-control" value="{{ old('name', optional($agent)->name) }}" required>
+                                        <label class="form-label" for="agent-name">Nama Agen</label>
+                                        <input type="text" id="agent-name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', optional($agent)->name) }}" placeholder="Ketikkan nama agen" required>
+                                        @error('name')
+                                            <div class="invalid-feedback d-block">Ketikkan nama agen terlebih dahulu.</div>
+                                        @else
+                                            <div class="invalid-feedback">Nama Agen wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Telepon</label>
-                                        <input type="text" name="phone" class="form-control" value="{{ old('phone', optional($agent)->phone) }}" required>
+                                        <label class="form-label" for="agent-phone">Telepon</label>
+                                        <input type="text" id="agent-phone" name="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', optional($agent)->phone) }}" placeholder="Contoh: 0812-3456-7890" required>
+                                        @error('phone')
+                                            <div class="invalid-feedback d-block">Nomor telepon harus diisi.</div>
+                                        @else
+                                            <div class="invalid-feedback">Nomor telepon wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">WhatsApp</label>
-                                        <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp', optional($agent)->whatsapp) }}" required>
+                                        <label class="form-label" for="agent-whatsapp">WhatsApp</label>
+                                        <input type="text" id="agent-whatsapp" name="whatsapp" class="form-control @error('whatsapp') is-invalid @enderror" value="{{ old('whatsapp', optional($agent)->whatsapp) }}" placeholder="Contoh: 0812-3456-7890" required>
+                                        @error('whatsapp')
+                                            <div class="invalid-feedback d-block">Nomor WhatsApp harus diisi.</div>
+                                        @else
+                                            <div class="invalid-feedback">Nomor WhatsApp wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" name="email" class="form-control" value="{{ old('email', optional($agent)->email) }}" required>
+                                        <label class="form-label" for="agent-email">Email</label>
+                                        <input type="email" id="agent-email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', optional($agent)->email) }}" placeholder="contoh@email.com" required>
+                                        @error('email')
+                                            <div class="invalid-feedback d-block">Email harus diisi dengan format yang benar.</div>
+                                        @else
+                                            <div class="invalid-feedback">Email harus diisi dengan format yang valid.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Link Maps</label>
-                                        <input type="url" name="map_link" class="form-control" value="{{ old('map_link', optional($agent)->map_link) }}">
+                                        <label class="form-label" for="agent-map-link">Link Maps</label>
+                                        <input type="url" id="agent-map-link" name="map_link" class="form-control @error('map_link') is-invalid @enderror" value="{{ old('map_link', optional($agent)->map_link) }}">
+                                        @error('map_link')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @else
+                                            <div class="invalid-feedback">Link maps harus berupa URL yang valid.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label">Alamat</label>
-                                        <textarea name="address" class="form-control" rows="3" required>{{ old('address', optional($agent)->address) }}</textarea>
+                                        <label class="form-label" for="agent-address">Alamat</label>
+                                        <textarea id="agent-address" name="address" class="form-control @error('address') is-invalid @enderror" rows="3" placeholder="Ketikkan alamat kantor atau lokasi agen" required>{{ old('address', optional($agent)->address) }}</textarea>
+                                        @error('address')
+                                            <div class="invalid-feedback d-block">Alamat agen harus diisi.</div>
+                                        @else
+                                            <div class="invalid-feedback">Alamat agen wajib diisi.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Jadwal Kunjungan</label>
-                                        <input type="text" name="schedule" class="form-control" value="{{ old('schedule', optional($agent)->schedule) }}">
+                                        <label class="form-label" for="agent-schedule">Jadwal Kunjungan</label>
+                                        <input type="text" id="agent-schedule" name="schedule" class="form-control @error('schedule') is-invalid @enderror" value="{{ old('schedule', optional($agent)->schedule) }}">
+                                        @error('schedule')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @else
+                                            <div class="invalid-feedback">Jadwal kunjungan tidak valid.</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Promo</label>
-                                        <input type="text" name="promo" class="form-control" value="{{ old('promo', optional($agent)->promo) }}">
+                                        <label class="form-label" for="agent-promo">Promo</label>
+                                        <input type="text" id="agent-promo" name="promo" class="form-control @error('promo') is-invalid @enderror" value="{{ old('promo', optional($agent)->promo) }}">
+                                        @error('promo')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @else
+                                            <div class="invalid-feedback">Promo tidak valid.</div>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -774,6 +888,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Bootstrap 5 form validation
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(function (form) {
+                if (form.querySelector('.is-invalid')) {
+                    form.classList.add('was-validated');
+                }
+
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
             // Highlight active sidebar link based on scroll position
             const navLinks = document.querySelectorAll('.admin-nav .nav-link');
             const sections = document.querySelectorAll('main section[id]');

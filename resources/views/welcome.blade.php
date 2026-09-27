@@ -16,6 +16,24 @@
            ============================================================ */
         html { scroll-behavior: smooth; }
 
+        /* Sentuhan modern: warna seleksi teks & scrollbar mengikuti tema */
+        ::selection { background: var(--sbm-hijau); color: #fff; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--sbm-bg); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--sbm-hijau), var(--sbm-oren));
+            border-radius: 999px;
+            border: 2px solid var(--sbm-bg);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #256b29, #a8460d); }
+
+        a, button { -webkit-tap-highlight-color: transparent; }
+        a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--sbm-hijau);
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
         :root {
             --sbm-hijau: #2E7D32;
             --sbm-hijau-dark: #17421A;
@@ -163,11 +181,20 @@
         }
         .hero-title .highlight { color: var(--sbm-peach); }
         .text-gradient {
-            background: linear-gradient(90deg, #ffe66d, #ff7a00, #ff3c78);
+            background: linear-gradient(90deg, #ffe66d, #ff7a00, #ff3c78, #ffe66d);
+            background-size: 300% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             color: transparent;
+            animation: shineText 6s linear infinite;
+        }
+        @keyframes shineText {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .text-gradient { animation: none; }
         }
         .hero-section::before {
             content: '';
@@ -304,6 +331,19 @@
             background: linear-gradient(135deg, var(--sbm-oren), #f57f30); color: white;
             transform: scale(1.15) rotate(5deg); box-shadow: 0 15px 30px rgba(200, 90, 23, 0.4);
         }
+        /* Variasi warna ikon per kartu supaya tidak monoton hijau semua */
+        .col-md-4:nth-child(3n+2) .feature-icon-wrapper {
+            background: linear-gradient(135deg, var(--sbm-oren-light) 0%, #fff 100%); color: var(--sbm-oren);
+            box-shadow: 0 10px 20px rgba(200, 90, 23, 0.1);
+        }
+        .col-md-4:nth-child(3n+3) .feature-icon-wrapper {
+            background: linear-gradient(135deg, var(--sbm-peach-light) 0%, #fff 100%); color: #9A5A22;
+            box-shadow: 0 10px 20px rgba(244, 162, 97, 0.15);
+        }
+        .col-md-4:nth-child(3n+2) .feature-card:hover .feature-icon-wrapper { background: linear-gradient(135deg, var(--sbm-hijau), #4F9A51); color: #fff; box-shadow: 0 15px 30px rgba(46,125,50,0.35); }
+        .col-md-4:nth-child(3n+3) .feature-card:hover .feature-icon-wrapper { background: linear-gradient(135deg, var(--sbm-peach), #c97a37); color: #fff; box-shadow: 0 15px 30px rgba(244,162,97,0.35); }
+        .col-md-4:nth-child(3n+2) .feature-card:hover { border-bottom-color: var(--sbm-hijau); box-shadow: var(--shadow-glow-hijau); }
+        .col-md-4:nth-child(3n+3) .feature-card:hover { border-bottom-color: var(--sbm-peach); box-shadow: 0 20px 40px rgba(244, 162, 97, 0.3); }
 
         /* ============================================================
            UNIT RUMAH
@@ -330,7 +370,29 @@
             font-weight: 800; font-size: 0.8rem;
             letter-spacing: 0.05em; text-transform: uppercase; padding: 8px 16px; border-radius: 999px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: transform .35s var(--ease);
         }
+        .unit-card:hover .unit-type-badge { transform: translateY(-2px); }
+
+        .unit-card .card-title {
+            color: var(--sbm-ink);
+            transition: color .3s var(--ease);
+        }
+        .unit-card:hover .card-title { color: var(--sbm-hijau-dark); }
+
+        .unit-price-tag {
+            position: relative;
+            display: inline-block;
+        }
+        .unit-price-tag::after {
+            content: '';
+            position: absolute; left: 0; bottom: -3px;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, var(--sbm-oren), var(--sbm-peach));
+            border-radius: 2px;
+            transition: width .4s var(--ease);
+        }
+        .unit-card:hover .unit-price-tag::after { width: 100%; }
 
         /* ============================================================
            SEARCH BOX — Pilihan Hunian
@@ -369,64 +431,195 @@
         .unit-search-reset:hover { text-decoration: underline; color: var(--sbm-oren); }
         .unit-search-info { font-size: 0.85rem; color: #6b7280; margin-top: 10px; }
 
+        .unit-filter-panel {
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(228, 234, 228, 0.95);
+            border-radius: 18px;
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(12px);
+            max-width: 760px;
+            margin-inline: auto;
+        }
+        .unit-filter-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 180px;
+            flex: 1;
+        }
+        .unit-filter-inline label {
+            font-size: 0.72rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #4b5b50;
+            white-space: nowrap;
+            margin-bottom: 0;
+            font-weight: 700;
+        }
+        .unit-filter-panel .form-select,
+        .unit-filter-panel .form-control {
+            min-height: 44px;
+            border: 1.5px solid var(--sbm-line);
+            border-radius: 12px;
+            background: #f9fbf9;
+            color: var(--sbm-ink);
+            box-shadow: none;
+            transition: all .25s var(--ease);
+            font-size: 0.9rem;
+        }
+        .unit-filter-panel .form-select:focus,
+        .unit-filter-panel .form-control:focus {
+            border-color: var(--sbm-hijau);
+            box-shadow: 0 0 0 0.2rem rgba(46,125,50,0.12);
+            background: #fff;
+        }
+        .unit-filter-btn {
+            min-height: 44px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--sbm-hijau), #4F9A51);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 12px 20px rgba(46, 125, 50, 0.18);
+            transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+            padding-inline: 1.1rem;
+        }
+        .unit-filter-btn:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 14px 24px rgba(46, 125, 50, 0.24);
+        }
+        .unit-filter-summary {
+            font-size: 0.82rem;
+            color: #5d685d;
+            margin-bottom: 1.5rem;
+        }
+        .unit-empty-state {
+            display: none;
+            width: 100%;
+        }
+        .unit-empty-state.show {
+            display: block;
+        }
+
+        .survey-card-body .form-control[type="date"] {
+            color: var(--sbm-ink);
+            min-height: 52px;
+        }
+        .survey-card-body .form-control[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
         /* ============================================================
-           KETERSEDIAAN
+           KETERSEDIAAN — didesain ulang, selaras tema hijau-oren
            ============================================================ */
         .avail-card {
             position: relative;
-            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(245,250,255,0.92) 100%);
-            backdrop-filter: blur(18px);
-            border-radius: var(--radius-xl); padding: 34px 30px 30px;
-            min-height: 320px; height: 100%;
-            border: none;
-            box-shadow: 0 24px 60px rgba(99,102,241,0.12), 0 8px 18px rgba(0,0,0,0.08);
-            transition: all .4s var(--ease);
+            background: linear-gradient(165deg, #ffffff 0%, #f7fbf7 100%);
+            border-radius: var(--radius-xl);
+            padding: 30px 28px 28px;
+            min-height: 320px;
+            height: 100%;
+            border: 1px solid rgba(46, 125, 50, 0.08);
+            box-shadow: 0 18px 40px rgba(23, 66, 26, 0.07), 0 4px 10px rgba(23, 66, 26, 0.04);
+            transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .45s var(--ease);
             overflow: hidden;
             font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
         }
         .avail-card::before {
             content: '';
             position: absolute;
-            top: 20px;
-            left: 24px;
-            width: 72px;
-            height: 6px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, rgba(46,125,50,0.95), rgba(200,90,23,0.95));
-            box-shadow: 0 10px 20px rgba(46,125,50,0.18);
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--sbm-hijau), var(--sbm-peach), var(--sbm-oren));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .5s var(--ease);
         }
-        .avail-card:hover { 
-            transform: translateY(-10px);
-            box-shadow: 0 30px 80px rgba(46,125,50,0.18), 0 12px 24px rgba(0,0,0,0.1);
-            background: linear-gradient(180deg, rgba(255,255,255,1), rgba(241,249,241,1));
+        .avail-card:hover {
+            transform: translateY(-9px);
+            box-shadow: 0 34px 64px rgba(23, 66, 26, 0.14), 0 10px 22px rgba(23, 66, 26, 0.08);
+            border-color: rgba(46, 125, 50, 0.18);
         }
+        .avail-card:hover::before { transform: scaleX(1); }
+
+        .avail-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .avail-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--sbm-hijau-light) 0%, #fff 100%);
+            color: var(--sbm-hijau);
+            flex-shrink: 0;
+            transition: all .4s var(--ease);
+        }
+        .avail-card:hover .avail-icon {
+            background: linear-gradient(135deg, var(--sbm-hijau), var(--sbm-oren));
+            color: #fff;
+            transform: rotate(-6deg) scale(1.08);
+        }
+
         .avail-card h5 {
             font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
             font-weight: 800;
             color: var(--sbm-hijau-dark);
-            margin-bottom: 0.85rem;
-            letter-spacing: 0.02em;
+            margin-bottom: 6px;
+            letter-spacing: 0.01em;
         }
-        .avail-card p {
-            color: #4b5b50;
-            line-height: 1.8;
-            font-size: 0.97rem;
+        .avail-type {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.78rem; font-weight: 700;
+            color: var(--sbm-oren);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 14px;
         }
-        .avail-card .badge {
-            background: linear-gradient(135deg, var(--sbm-hijau), var(--sbm-oren));
-            color: white;
-            box-shadow: 0 12px 24px rgba(46,125,50,0.18);
+        .avail-type .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sbm-oren); display: inline-block; }
+        .avail-card p:not(.avail-type) {
+            color: #5c685f;
+            line-height: 1.75;
+            font-size: 0.93rem;
         }
-        .avail-card a.btn {
-            background: linear-gradient(135deg, var(--sbm-hijau), #4f9a51);
+
+        .avail-card .status-badge {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 7px 14px;
+            border-radius: 999px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            transition: transform .3s var(--ease);
+        }
+        .avail-card:hover .status-badge { transform: scale(1.06); }
+
+        .avail-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-weight: 700; font-size: 0.88rem;
+            color: var(--sbm-hijau-dark) !important;
+            background: var(--sbm-hijau-light);
             border: none;
-            color: white !important;
-            box-shadow: 0 14px 30px rgba(46,125,50,0.22);
+            text-decoration: none !important;
+            transition: all .35s var(--ease);
         }
-        .avail-card a.btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 18px 36px rgba(46,125,50,0.28);
+        .avail-btn svg { transition: transform .35s var(--ease); }
+        .avail-btn:hover {
+            background: linear-gradient(135deg, var(--sbm-hijau), #4f9a51);
+            color: #fff !important;
+            box-shadow: 0 16px 28px rgba(46,125,50,0.28);
+            transform: translateY(-2px);
         }
+        .avail-btn:hover svg { transform: translateX(4px); }
+
         #ketersediaan {
             background-image: radial-gradient(circle at 90% 15%, rgba(46,125,50,0.08), transparent 20%),
                               radial-gradient(circle at 15% 70%, rgba(200,90,23,0.08), transparent 18%);
@@ -581,6 +774,9 @@
         .footer-tagline { font-size: 0.95rem; color: rgba(255,255,255,0.7); max-width: 450px; margin: 15px auto 0; font-weight: 300; }
         .footer-divider { border-top: 1px solid rgba(255,255,255,0.1); margin: 40px 0 25px; }
         .footer-copy { font-size: 0.85rem; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
+        .roofline-divider-footer { margin-top: 0; }
+        .roofline-divider-footer path { fill: var(--sbm-hijau-dark); }
+        .footer-roof-mark { margin-bottom: 14px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25)); }
 
         @media (max-width: 992px) {
             .hero-section { padding-top: 130px; background-attachment: scroll; }
@@ -663,6 +859,47 @@
             .modal-footer a.btn { width: 100%; text-align: center; }
         }
 
+        /* ============================================================
+           DENAH KAVILNG / SITE PLAN
+           ============================================================ */
+        .denah-section { position: relative; overflow: hidden; }
+        .denah-blob { position: absolute; filter: blur(90px); z-index: 0; pointer-events: none; animation: morph 14s ease-in-out infinite, floatAnim 9s ease-in-out infinite; }
+        .denah-blob-1 { width: 380px; height: 380px; background: rgba(46,125,50,0.12); top: -60px; left: -120px; }
+        .denah-blob-2 { width: 320px; height: 320px; background: rgba(200,90,23,0.12); bottom: -80px; right: -100px; animation-delay: -5s; }
+        .denah-section .container { position: relative; z-index: 1; }
+
+        .denah-frame {
+            position: relative;
+            max-width: 980px;
+            border-radius: var(--radius-xl);
+            padding: 12px;
+            background: linear-gradient(135deg, var(--sbm-hijau) 0%, var(--sbm-peach) 55%, var(--sbm-oren) 100%);
+            box-shadow: var(--shadow-lift);
+            cursor: zoom-in;
+            transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+        }
+        .denah-frame:hover { transform: translateY(-6px); box-shadow: 0 40px 74px rgba(23, 66, 26, 0.22); }
+        .denah-img { width: 100%; display: block; border-radius: 20px; }
+        .denah-zoom-hint {
+            position: absolute; bottom: 22px; right: 22px;
+            background: rgba(23, 66, 26, 0.85); color: #fff;
+            padding: 9px 16px; border-radius: 999px;
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em;
+            display: inline-flex; align-items: center; gap: 8px;
+            backdrop-filter: blur(6px);
+            pointer-events: none;
+        }
+
+        #denahModal .modal-content { background: transparent; border: none; }
+        #denahModal .btn-close { filter: invert(1); opacity: .9; }
+        #denahModal img { width: 100%; border-radius: 20px; box-shadow: 0 40px 90px rgba(0,0,0,0.4); }
+
+        @media (max-width: 576px) {
+            .denah-zoom-hint { bottom: 12px; right: 12px; padding: 7px 12px; font-size: 0.72rem; }
+            .denah-frame { padding: 8px; border-radius: 22px; }
+            .denah-img { border-radius: 16px; }
+        }
+
         img, svg { max-width: 100%; height: auto; }
     </style>
 </head>
@@ -695,6 +932,7 @@
                     <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
                     <li class="nav-item"><a class="nav-link" href="#unit-rumah">Tipe Rumah</a></li>
                     <li class="nav-item"><a class="nav-link" href="#ketersediaan">Ketersediaan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#denah">Denah Kavling</a></li>
                     <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
                 </ul>
                 <a href="#kontak" class="btn btn-oren-solid px-4 py-2 rounded-pill fw-bold mt-3 mt-lg-0 shadow-sm text-decoration-none">Ajukan Survei</a>
@@ -900,7 +1138,31 @@
                 @endif
             </div>
 
-            <div class="row g-4">
+            <div class="unit-filter-panel p-3 mb-5 reveal" style="--d: 120ms;">
+                <form id="unitFilterForm" class="d-flex flex-wrap align-items-center justify-content-center gap-2 gap-md-3">
+                    <div class="unit-filter-inline flex-fill">
+                        <label for="filterPrice">Harga</label>
+                        <select id="filterPrice" class="form-select">
+                            <option value="all">Semua harga</option>
+                            <option value="under-500">Di bawah 500 Juta</option>
+                            <option value="500-1000">500 Juta - 1 Miliar</option>
+                        </select>
+                    </div>
+                    <div class="unit-filter-inline flex-fill">
+                        <label for="sortPrice">Urut</label>
+                        <select id="sortPrice" class="form-select">
+                            <option value="default">Default</option>
+                            <option value="asc">Termurah</option>
+                            <option value="desc">Termahal</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn unit-filter-btn">Terapkan</button>
+                </form>
+            </div>
+
+            <p id="unitFilterSummary" class="unit-filter-summary text-center">Menampilkan semua unit</p>
+
+            <div class="row g-4" id="unitCardGrid">
                 @forelse($filteredClusters as $cluster)
                     @php
                         $clusterImage = $cluster->image_url
@@ -911,17 +1173,17 @@
                               )
                             : 'https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=500&q=80';
                     @endphp
-                    <div class="col-md-4 reveal" style="--d: {{ $loop->index * 60 }}ms;">
+                    <div class="col-md-4 reveal unit-card-wrapper" data-type="{{ strtolower($cluster->type) }}" data-price="{{ (int) $cluster->price }}" style="--d: {{ $loop->index * 60 }}ms;">
                         <div class="card unit-card">
                             <div class="unit-card-img-wrap">
-                                <img src="{{ $clusterImage }}" alt="{{ $cluster->name }}">
+                                <img src="{{ $clusterImage }}" alt="{{ $cluster->name }}" loading="lazy">
                                 <span class="badge bg-hijau unit-type-badge text-white">{{ $cluster->type }}</span>
                             </div>
                             <div class="card-body p-4 d-flex flex-column">
                                 <h4 class="card-title fw-bold">{{ $cluster->name }}</h4>
                                 <p class="card-text text-muted small mb-3">{{ \Illuminate\Support\Str::limit($cluster->description, 100) }}</p>
                                 <div class="d-flex justify-content-between align-items-center mt-auto">
-                                    <h5 class="fw-bold text-oren mb-0">Rp {{ number_format($cluster->price, 0, ',', '.') }}</h5>
+                                    <h5 class="fw-bold text-oren mb-0 unit-price-tag">Rp {{ number_format($cluster->price, 0, ',', '.') }}</h5>
                                     <button class="btn btn-sm text-white fw-bold px-3 py-1" style="background: var(--sbm-hijau); border-radius: 999px;" data-bs-toggle="modal" data-bs-target="#detail-{{ $cluster->id }}">Detail</button>
                                 </div>
                             </div>
@@ -938,6 +1200,12 @@
                         </div>
                     </div>
                 @endforelse
+
+                <div id="unitEmptyState" class="unit-empty-state">
+                    <div class="alert alert-warning text-center rounded-4 py-4 border-0 shadow-sm">
+                        Tidak ada unit yang cocok dengan kombinasi filter yang dipilih saat ini.
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -955,13 +1223,19 @@
                 @forelse($clusters as $cluster)
                     <div class="col-md-4 reveal" style="--d: {{ $loop->index * 60 }}ms;">
                         <div class="avail-card d-flex flex-column">
-                            <h5 class="fw-bold mb-3">{{ $cluster->name }}</h5>
-                            <p class="text-secondary small mb-2">{{ $cluster->type }}</p>
-                            <p class="mb-4">{{ \Illuminate\Support\Str::limit($cluster->feature_summary ?: $cluster->description, 110) }}</p>
-                            <div class="mt-auto">
+                            <div class="avail-card-top">
                                 <span class="badge {{ $cluster->status->badge_class }} status-badge">{{ $cluster->status->name }}</span>
-                                <a href="#detail-{{ $cluster->id }}" class="btn btn-sm btn-outline-success rounded-pill px-3 mt-3 d-block w-100" data-bs-toggle="modal" data-bs-target="#detail-{{ $cluster->id }}">Lihat Detail</a>
+                                <div class="avail-icon">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                                </div>
                             </div>
+                            <h5 class="fw-bold">{{ $cluster->name }}</h5>
+                            <p class="avail-type"><span class="dot"></span>{{ $cluster->type }}</p>
+                            <p class="mb-0">{{ \Illuminate\Support\Str::limit($cluster->feature_summary ?: $cluster->description, 110) }}</p>
+                            <a href="#detail-{{ $cluster->id }}" class="avail-btn mt-auto" data-bs-toggle="modal" data-bs-target="#detail-{{ $cluster->id }}">
+                                Lihat Detail
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6l6 6-6 6"></path></svg>
+                            </a>
                         </div>
                     </div>
                 @empty
@@ -972,6 +1246,45 @@
             </div>
         </div>
     </section>
+
+    <!-- ================= DENAH KAVLING / SITE PLAN ================= -->
+    <section id="denah" class="py-5 denah-section" style="background-color: var(--sbm-bg);">
+        <div class="denah-blob denah-blob-1"></div>
+        <div class="denah-blob denah-blob-2"></div>
+        <div class="container py-5">
+            <div class="text-center mb-5 reveal">
+                <h6 class="eyebrow text-oren justify-content-center">SITE PLAN</h6>
+                <h2 class="fw-bold text-hijau">Denah Kavling</h2>
+                <p class="text-muted">Lihat tata letak cluster dan fasilitas umum Swarga Boemi Madani Residence.</p>
+            </div>
+
+            <div class="denah-frame mx-auto reveal" style="--d: 100ms;" data-bs-toggle="modal" data-bs-target="#denahModal" role="button" tabindex="0" aria-label="Perbesar denah kavling">
+                <img src="{{ asset('images/denahsbm.png') }}" alt="Denah Kavling Swarga Boemi Madani Residence" class="denah-img" loading="lazy">
+                <span class="denah-zoom-hint">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16zM11 8v6M8 11h6"></path></svg>
+                    Klik untuk perbesar
+                </span>
+            </div>
+
+            <div class="text-center mt-4 reveal" style="--d: 160ms;">
+                <a href="{{ asset('images/denahsbm.png') }}" download class="btn btn-hero-outline" style="color: var(--sbm-hijau); border-color: var(--sbm-hijau); background: transparent;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right:6px; vertical-align:-2px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"></path></svg>
+                    Unduh Denah
+                </a>
+                <p class="unit-search-info mt-3 mb-0">*Denah bersifat ilustrasi, dapat berubah sewaktu-waktu tanpa pemberitahuan sebelumnya.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal perbesar denah -->
+    <div class="modal fade" id="denahModal" tabindex="-1" aria-labelledby="denahModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content position-relative">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Tutup" style="z-index: 5;"></button>
+                <img src="{{ asset('images/denahsbm.png') }}" alt="Denah Kavling Swarga Boemi Madani Residence - Perbesar">
+            </div>
+        </div>
+    </div>
 
     <!-- ================= KONTAK & SURVEI ================= -->
     <section id="kontak" class="py-5 kontak-section">
@@ -1025,7 +1338,16 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label text-ink fw-semibold" style="font-size:0.85rem;">Jadwal Pilihan</label>
-                                        <input type="text" name="preferred_schedule" class="form-control" value="{{ old('preferred_schedule') }}" placeholder="Contoh: Sabtu, 10:00">
+                                        <input
+                                            type="date"
+                                            name="preferred_schedule"
+                                            class="form-control"
+                                            value="{{ old('preferred_schedule') }}"
+                                            placeholder="dd/mm/yyyy"
+                                            lang="id-ID"
+                                            aria-label="Jadwal pilihan"
+                                        >
+                                        <small class="text-muted d-block mt-2">Format tanggal: dd/mm/yyyy</small>
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label text-ink fw-semibold" style="font-size:0.85rem;">Catatan Tambahan</label>
@@ -1201,13 +1523,27 @@
         </div>
     </div>
 
+    <!-- Roofline divider — jembatan visual sebelum footer, motif konsisten dengan logo & hero -->
+    <svg class="roofline-divider roofline-divider-footer" viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,60 L0,40 L120,10 L240,40 L360,14 L480,40 L600,10 L720,40 L840,14 L960,40 L1080,10 L1200,40 L1320,14 L1440,40 L1440,60 Z"></path>
+    </svg>
+
     <!-- ================= FOOTER ================= -->
     <footer class="footer-sbm text-center">
         <div class="container">
+            <svg class="sbm-roof footer-roof-mark" width="46" height="14" viewBox="0 0 54 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="2,15 27,2 52,15" stroke="url(#sbmRoofGradFooter)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                <defs>
+                    <linearGradient id="sbmRoofGradFooter" x1="2" y1="0" x2="52" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#7fd88a"></stop>
+                        <stop offset="1" stop-color="#f4a261"></stop>
+                    </linearGradient>
+                </defs>
+            </svg>
             <div class="footer-brand">SWARGA BOEMI MADANI Residence</div>
             <p class="footer-tagline">Hunian modern— Smart & Comfort Living.</p>
             <div class="footer-divider"></div>
-            <p class="footer-copy mb-0">&copy; {{ date('Y') }} Swarga Boemi Madani. Ernesya Fatimah Zahra.</p>
+            <p class="footer-copy mb-0">&copy; {{ date('Y') }} Swarga Boemi Madani. PT. Abyakta Sadawira Bangun Mandiri.</p>
         </div>
     </footer>
 
@@ -1288,6 +1624,68 @@
 
             window.addEventListener('scroll', updateActiveLink);
             updateActiveLink();
+
+            /* ---------- Unit filter & sort logic ---------- */
+            const filterForm = document.getElementById('unitFilterForm');
+            const filterPrice = document.getElementById('filterPrice');
+            const sortPrice = document.getElementById('sortPrice');
+            const unitGrid = document.getElementById('unitCardGrid');
+            const unitEmptyState = document.getElementById('unitEmptyState');
+            const unitFilterSummary = document.getElementById('unitFilterSummary');
+            const unitCards = Array.from(document.querySelectorAll('.unit-card-wrapper'));
+
+            function getPriceBucket(price) {
+                if (price < 500000000) return 'under-500';
+                if (price <= 1000000000) return '500-1000';
+                return 'over-1000';
+            }
+
+            function applyUnitFilters() {
+                const selectedPrice = filterPrice.value;
+                const selectedSort = sortPrice.value;
+
+                let visibleCards = unitCards.filter(card => {
+                    const priceValue = Number(card.dataset.price || 0);
+                    const priceMatch = selectedPrice === 'all' || getPriceBucket(priceValue) === selectedPrice;
+                    return priceMatch;
+                });
+
+                if (selectedSort === 'asc') {
+                    visibleCards.sort((a, b) => Number(a.dataset.price) - Number(b.dataset.price));
+                } else if (selectedSort === 'desc') {
+                    visibleCards.sort((a, b) => Number(b.dataset.price) - Number(a.dataset.price));
+                }
+
+                unitCards.forEach(card => card.style.display = 'none');
+                visibleCards.forEach(card => {
+                    card.style.display = 'block';
+                    unitGrid.appendChild(card);
+                });
+
+                const hasVisible = visibleCards.length > 0;
+                unitEmptyState.classList.toggle('show', !hasVisible);
+
+                if (hasVisible) {
+                    const priceLabel = selectedPrice === 'all' ? 'Semua harga' : filterPrice.options[filterPrice.selectedIndex].text;
+                    const sortLabel = selectedSort === 'default' ? 'default' : sortPrice.options[sortPrice.selectedIndex].text;
+                    unitFilterSummary.textContent = `Menampilkan ${visibleCards.length} unit • ${priceLabel} • ${sortLabel}`;
+                } else {
+                    unitFilterSummary.textContent = 'Tidak ada unit yang cocok dengan filter saat ini.';
+                }
+            }
+
+            [filterPrice, sortPrice].forEach(element => {
+                element.addEventListener('change', applyUnitFilters);
+            });
+
+            if (filterForm) {
+                filterForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    applyUnitFilters();
+                });
+            }
+
+            applyUnitFilters();
 
             /* ---------- Chatbot Logic ---------- */
             const chatbotToggle = document.getElementById('chatbotToggle');

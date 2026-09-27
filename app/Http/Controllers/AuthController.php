@@ -147,12 +147,29 @@ class AuthController extends Controller
 
         $payload = $pending->payload ?? [];
 
-        // Assign to authenticated user and add timestamps
-        $payload['user_id'] = Auth::id();
-        $payload['submitted_at'] = now();
-        $payload['verified_at'] = now();
+        $existingSubmission = \App\Models\SurveySubmission::where('email', $payload['email'] ?? null)->first();
 
-        $created = \App\Models\SurveySubmission::create($payload);
+        if ($existingSubmission) {
+            $existingSubmission->update([
+                'user_id' => Auth::id(),
+                'submitted_at' => now(),
+                'verified_at' => now(),
+                'status' => 'pending',
+                'name' => $payload['name'] ?? $existingSubmission->name,
+                'phone' => $payload['phone'] ?? $existingSubmission->phone,
+                'address' => $payload['address'] ?? $existingSubmission->address,
+                'preferred_schedule' => $payload['preferred_schedule'] ?? $existingSubmission->preferred_schedule,
+                'notes' => $payload['notes'] ?? $existingSubmission->notes,
+            ]);
+            $created = $existingSubmission;
+        } else {
+            // Assign to authenticated user and add timestamps
+            $payload['user_id'] = Auth::id();
+            $payload['submitted_at'] = now();
+            $payload['verified_at'] = now();
+
+            $created = \App\Models\SurveySubmission::create($payload);
+        }
 
         Log::info('Completed pending survey submission', [
             'submission_id' => $created->id,

@@ -17,7 +17,6 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        // Jika tabel statuses kosong di database, otomatis isikan data default
         if (Status::count() == 0) {
             Status::insert([
                 ['name' => 'Tersedia', 'badge_class' => 'bg-success text-white', 'created_at' => now(), 'updated_at' => now()],
@@ -47,10 +46,9 @@ class AdminController extends Controller
             'bedrooms' => 'required|integer|min:0|max:20',
             'bathrooms' => 'required|integer|min:0|max:20',
             'carport' => 'required|integer|min:0|max:10',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'feature_summary' => 'nullable|string',
-            // Baris validasi 'image_url' SUDAH DIHAPUS di sini
-            'image' => 'nullable|image|max:5120',
+            'image' => 'required|image|max:5120',
         ]);
 
         if ($request->hasFile('image')) {
@@ -82,9 +80,8 @@ class AdminController extends Controller
             'bedrooms' => 'required|integer|min:0|max:20',
             'bathrooms' => 'required|integer|min:0|max:20',
             'carport' => 'required|integer|min:0|max:10',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'feature_summary' => 'nullable|string',
-            // Baris validasi 'image_url' SUDAH DIHAPUS di sini
             'image' => 'nullable|image|max:5120',
         ]);
 
@@ -132,6 +129,7 @@ class AdminController extends Controller
         }
 
         // Timestamp check: ensure form wasn't submitted too quickly (>= 3 seconds)
+        // This is only enforced for the pending verification flow that includes a timestamp.
         $ts = intval($request->input('ts', 0));
         if ($ts > 0) {
             $age = now()->timestamp - $ts;
@@ -142,38 +140,54 @@ class AdminController extends Controller
 
         $data['status'] = 'pending';
 
-        // Jika sudah login sebagai pembeli (bukan admin), simpan langsung ke database
-        if (auth()->check() && auth()->user()->role !== 'admin') {
-            $data['user_id'] = auth()->id();
+        // Jika request berasal dari submit publik langsung, simpan segera ke tabel utama.
+        // Jika request berasal dari alur pending setelah pengunjung mengisi form anonim,
+        // simpan hanya record pending lalu lanjut ke proses login/register.
+        $isPendingFlow = $request->has('ts') || $request->has('hp_name');
+
+        if (!$isPendingFlow) {
             $data['submitted_at'] = now();
             $data['verified_at'] = now();
 
-            SurveySubmission::create($data);
+            if (auth()->check() && auth()->user()->role !== 'admin') {
+                $data['user_id'] = auth()->id();
+                $submission = SurveySubmission::create($data);
 
-            Log::info('Created survey submission', [
+                Log::info('Created survey submission', [
+                    'email' => $data['email'] ?? null,
+                    'user_id' => $data['user_id'] ?? null,
+                    'submission_id' => $submission->id,
+                    'ip' => request()->ip(),
+                ]);
+
+                return back()->with('success', 'Pengajuan survei berhasil dikirim. Tim kami akan menghubungi Anda segera.');
+            }
+
+            $submission = SurveySubmission::create($data);
+
+            Log::info('Created direct survey submission', [
+                'submission_id' => $submission->id,
                 'email' => $data['email'] ?? null,
-                'user_id' => $data['user_id'] ?? null,
-                'ip' => request()->ip(),
+                'ip' => $request->ip(),
             ]);
 
             return back()->with('success', 'Pengajuan survei berhasil dikirim. Tim kami akan menghubungi Anda segera.');
         }
 
-        // Untuk pengunjung anonim: simpan sementara di tabel pending_survey_submissions dengan token
         $token = \Illuminate\Support\Str::random(40);
-        PendingSurveySubmission::create([
+        $pending = PendingSurveySubmission::create([
             'token' => $token,
             'payload' => $data,
             'created_at' => now(),
         ]);
 
         Log::info('Created pending survey submission', [
+            'pending_id' => $pending?->id,
             'token' => $token,
             'email' => $data['email'] ?? null,
             'ip' => $request->ip(),
         ]);
 
-        // Redirect user to authenticate (login/register) with token
         return redirect()->route('auth.verify.prompt', ['token' => $token])
             ->with('info', 'Terima kasih, langkah selanjutnya: silakan login atau buat akun untuk menyelesaikan pengajuan.');
     }
